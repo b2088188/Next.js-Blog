@@ -3,7 +3,7 @@ import Image from "next/image";
 import classes from "./post-item.module.css";
 
 function PostItem({ post }) {
-	const { title, image, excerpt, date, slug } = post;
+	const { title, image, excerpt, date, _id } = post;
 	const formattedDate = new Date(date).toLocaleDateString("en-US", {
 		day: "numeric",
 		month: "long",
@@ -12,11 +12,11 @@ function PostItem({ post }) {
 
 	return (
 		<li className={classes.post}>
-			<Link href={`/posts/${slug}`}>
+			<Link href={`/posts/${_id}`}>
 				<a>
 					<div className={classes.image}>
 						<Image
-							src={`/images/posts/${slug}/${image}`}
+							src={`/images/posts/${image}`}
 							alt={title}
 							width={300}
 							height={200}
