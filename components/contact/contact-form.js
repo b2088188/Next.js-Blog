@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classes from "./contact-form.module.css";
+import Notification from "../ui/notification";
 
 function ContactForm() {
 	const dispatch = useDispatch();
-	const state = useSelector((state) => state);
+	const fetchState = useSelector((state) => state.fetchState);
 	const [email, setEmail] = useState("");
 	const [name, setName] = useState("");
 	const [message, setMessage] = useState("");
+
+	useEffect(() => {
+		if (fetchState.status === "resolved") {
+			setEmail("");
+			setName("");
+			setMessage("");
+		}
+		if (fetchState.status !== "idle") {
+			const timer = setTimeout(() => {
+				dispatch({ type: "FETCH_RESET" });
+			}, 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [fetchState.status]);
+
 	function onSendMessage(e) {
 		e.preventDefault();
 		dispatch({
@@ -21,7 +37,7 @@ function ContactForm() {
 			},
 		});
 	}
-	console.log(state);
+
 	return (
 		<section className={classes.contact}>
 			<h1>How can I help you?</h1>
@@ -63,6 +79,13 @@ function ContactForm() {
 					<button>Send Message</button>
 				</div>
 			</form>
+			{fetchState.status === "pending" ? (
+				<h2>Loading...</h2>
+			) : fetchState.status === "rejected" ? (
+				<h2>{fetchState.error.message}</h2>
+			) : fetchState.status === "resolved" ? (
+				<h2>Success!</h2>
+			) : null}
 		</section>
 	);
 }
